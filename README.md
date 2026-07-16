@@ -8,10 +8,9 @@ This is a companion piece to a separate data-*analytics* portfolio project;
 Datasweep is the data-*engineering* / tool-building half. It works with any
 tabular dataset by design.
 
-**Status:** architecture scaffold (step 1 of the build plan). Frontend and
-backend are wired together and provably talking to each other through a real,
-sandboxed database session. Upload parsing, profiling, and cleaning actions
-are not built yet — that's next.
+**Status:** step 2 of the build plan complete. Upload, allowlisted `.sql`
+parsing, `.csv` type inference, and per-session schema profiling are live
+end to end. Cleaning actions and export are next.
 
 ## Why this exists
 
@@ -42,7 +41,9 @@ avoids that at the architecture level rather than trying to filter bad input:
   uploaded file can populate a sandbox but never reach outside it.
 
 This means even a malicious or malformed upload can, at worst, break its own
-disposable session — not the server, and not anyone else's data.
+disposable session — not the server, and not anyone else's data. Tested
+directly: a `.sql` file with a `DROP TABLE` mixed in among valid statements
+is rejected wholesale before anything executes (see `backend/src/sql/allowlistParser.js`).
 
 ## Project structure
 
@@ -61,10 +62,14 @@ Datasweep/
         ├── server.js            app entrypoint, CORS, error handling
         ├── middleware/session.js   issues/reads the per-client session id
         ├── db/sessionStore.js      per-session in-memory SQLite (the core decision)
+        ├── sql/
+        │   ├── allowlistParser.js  splits + validates .sql -- CREATE TABLE/INSERT only
+        │   ├── csvLoader.js        CSV parsing + column type inference
+        │   └── introspect.js       reads back schema (tables/columns/row counts)
         └── routes/
             ├── health.js         GET /api/health
-            └── session.js        GET /api/session/ping -- round-trips a query
-                                   through a real sandboxed session db
+            ├── session.js        GET /api/session/ping, GET /api/schema
+            └── upload.js         POST /api/upload -- .sql or .csv, 10MB cap
 ```
 
 ## Running it locally
@@ -94,8 +99,9 @@ successfully.
 
 - [x] **Step 1 — Architecture**: frontend/backend scaffold, per-session
       sandboxed SQLite, proven connectivity
-- [ ] **Step 2 — Upload & parsing**: `.sql` (allowlisted `CREATE TABLE` /
-      `INSERT` only) and `.csv` ingestion into the session database
+- [x] **Step 2 — Upload & parsing**: `.sql` (allowlisted `CREATE TABLE` /
+      `INSERT` only) and `.csv` ingestion into the session database, with
+      drag-and-drop upload UI and live schema display
 - [ ] **Step 3 — Profiling engine**: per-column type/null/unique/min-max
       summary, dataset-agnostic
 - [ ] **Step 4 — Cleaning actions**: duplicate detection/removal (exact and

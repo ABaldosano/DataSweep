@@ -2,19 +2,20 @@ import { useEffect, useState } from "react";
 import ControlPanel from "./components/ControlPanel";
 import ThemeToggle from "./components/ThemeToggle";
 import Section from "./components/Section";
+import UploadPanel from "./components/UploadPanel";
+import { apiFetch } from "./api/client";
 import { useTheme } from "./hooks/useTheme";
 import "./App.css";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
   const [backendStatus, setBackendStatus] = useState("checking");
+  const [tables, setTables] = useState([]);
 
   useEffect(() => {
     let cancelled = false;
 
-    fetch(`${API_URL}/api/health`)
+    apiFetch("/api/health")
       .then((res) => {
         if (!res.ok) throw new Error(`status ${res.status}`);
         return res.json();
@@ -65,16 +66,11 @@ export default function App() {
         </header>
 
         <Section index="01" title="Upload" subtitle="Accepts .sql (CREATE TABLE / INSERT only) or .csv">
-          <div className="upload-drop">
-            <strong>Upload coming in the next build step</strong>
-            This is the architecture scaffold — file parsing, schema
-            profiling, and cleaning actions land next.
-          </div>
+          <UploadPanel tables={tables} onUploaded={(newTables) => setTables(newTables)} />
         </Section>
 
         <footer className="app-footer">
-          Datasweep — architecture scaffold · React + Vite frontend, Express +
-          SQLite backend, per-session sandboxing
+          Datasweep — React + Vite frontend, Express + SQLite backend, per-session sandboxing
         </footer>
       </div>
     </>

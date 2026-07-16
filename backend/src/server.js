@@ -4,6 +4,7 @@ import cors from "cors";
 import { sessionMiddleware } from "./middleware/session.js";
 import healthRouter from "./routes/health.js";
 import sessionRouter from "./routes/session.js";
+import uploadRouter from "./routes/upload.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -15,6 +16,7 @@ app.use(sessionMiddleware);
 
 app.use("/api", healthRouter);
 app.use("/api", sessionRouter);
+app.use("/api", uploadRouter);
 
 // Centralized error handler -- keeps stack traces out of responses.
 app.use((err, req, res, next) => {

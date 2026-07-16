@@ -1,0 +1,132 @@
+.upload-drop {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 48px 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--card-bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.upload-drop:hover,
+.upload-drop:focus-visible {
+  border-color: var(--gold-dim);
+  outline: none;
+}
+
+.upload-drop.drag-active {
+  border-color: var(--accent-data);
+  background: var(--accent-data-soft);
+}
+
+.upload-drop.uploading {
+  cursor: progress;
+  opacity: 0.75;
+}
+
+.upload-drop strong {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.upload-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-warn);
+  background: rgba(161, 61, 45, 0.08);
+}
+
+.upload-error .status-dot {
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  border-radius: 50%;
+  background: var(--accent-warn);
+}
+
+.schema-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.schema-table {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  background: var(--bg2);
+}
+
+.schema-table-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.schema-table-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.schema-table-rows {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.schema-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.schema-column {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  padding: 4px 10px 4px 12px;
+  background: var(--card-bg);
+}
+
+.type-badge {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: var(--bg);
+  background: var(--gold-dim);
+}
+
+.type-badge.type-integer,
+.type-badge.type-real {
+  background: var(--accent-data);
+}
+
+.type-badge.type-text {
+  background: var(--gold-dim);
+}
