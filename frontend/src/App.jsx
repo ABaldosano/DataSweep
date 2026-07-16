@@ -3,6 +3,7 @@ import ControlPanel from "./components/ControlPanel";
 import ThemeToggle from "./components/ThemeToggle";
 import Section from "./components/Section";
 import UploadPanel from "./components/UploadPanel";
+import ProfilePanel from "./components/ProfilePanel";
 import { apiFetch } from "./api/client";
 import { useTheme } from "./hooks/useTheme";
 import "./App.css";
@@ -11,6 +12,7 @@ export default function App() {
   const { theme, toggleTheme } = useTheme();
   const [backendStatus, setBackendStatus] = useState("checking");
   const [tables, setTables] = useState([]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -66,7 +68,17 @@ export default function App() {
         </header>
 
         <Section index="01" title="Upload" subtitle="Accepts .sql (CREATE TABLE / INSERT only) or .csv">
-          <UploadPanel tables={tables} onUploaded={(newTables) => setTables(newTables)} />
+          <UploadPanel
+            tables={tables}
+            onUploaded={(newTables) => {
+              setTables(newTables);
+              setRefreshKey((k) => k + 1);
+            }}
+          />
+        </Section>
+
+        <Section index="02" title="Profile" subtitle="Per-column nulls, uniqueness, range, and samples">
+          <ProfilePanel refreshKey={refreshKey} />
         </Section>
 
         <footer className="app-footer">

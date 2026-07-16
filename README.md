@@ -8,9 +8,10 @@ This is a companion piece to a separate data-*analytics* portfolio project;
 Datasweep is the data-*engineering* / tool-building half. It works with any
 tabular dataset by design.
 
-**Status:** step 2 of the build plan complete. Upload, allowlisted `.sql`
-parsing, `.csv` type inference, and per-session schema profiling are live
-end to end. Cleaning actions and export are next.
+**Status:** step 3 of the build plan complete. Upload, allowlisted `.sql`
+parsing, `.csv` type inference, and a full per-column profiling engine
+(nulls, uniqueness, min/max/avg, samples) are live end to end. Cleaning
+actions and export are next.
 
 ## Why this exists
 
@@ -65,11 +66,13 @@ Datasweep/
         ├── sql/
         │   ├── allowlistParser.js  splits + validates .sql -- CREATE TABLE/INSERT only
         │   ├── csvLoader.js        CSV parsing + column type inference
-        │   └── introspect.js       reads back schema (tables/columns/row counts)
+        │   ├── introspect.js       reads back schema (tables/columns/row counts)
+        │   └── profiler.js         per-column stats: nulls, uniqueness, min/max/avg, samples
         └── routes/
             ├── health.js         GET /api/health
             ├── session.js        GET /api/session/ping, GET /api/schema
-            └── upload.js         POST /api/upload -- .sql or .csv, 10MB cap
+            ├── upload.js         POST /api/upload -- .sql or .csv, 10MB cap
+            └── profile.js        GET /api/profile -- deep per-column stats
 ```
 
 ## Running it locally
@@ -102,8 +105,9 @@ successfully.
 - [x] **Step 2 — Upload & parsing**: `.sql` (allowlisted `CREATE TABLE` /
       `INSERT` only) and `.csv` ingestion into the session database, with
       drag-and-drop upload UI and live schema display
-- [ ] **Step 3 — Profiling engine**: per-column type/null/unique/min-max
-      summary, dataset-agnostic
+- [x] **Step 3 — Profiling engine**: per-column null counts, unique-value
+      counts, min/max/avg for numerics, and sample values, rendered as a
+      stats table per uploaded table
 - [ ] **Step 4 — Cleaning actions**: duplicate detection/removal (exact and
       key-based), null handling strategies, outlier flagging, with
       before/after previews and undo
