@@ -1,0 +1,72 @@
+.dash-section {
+  padding: 40px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-section-header {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  margin-bottom: 24px;
+}
+
+.dash-section-index {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+
+.dash-section-header h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 24px;
+  margin: 0 0 4px 0;
+  color: var(--text);
+}
+
+.dash-section-header p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.dash-section-body {
+  min-height: 40px;
+  position: relative;
+  padding: 4px;
+}
+
+/* corner brackets, carried over from the portfolio's image-frame treatment */
+.dash-section-body::before,
+.dash-section-body::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.35;
+  transition: opacity 0.25s ease;
+}
+.dash-section-body::before {
+  top: 0; left: 0;
+  border-top: 1.5px solid var(--gold);
+  border-left: 1.5px solid var(--gold);
+}
+.dash-section-body::after {
+  bottom: 0; right: 0;
+  border-bottom: 1.5px solid var(--gold);
+  border-right: 1.5px solid var(--gold);
+}
+.dash-section:hover .dash-section-body::before,
+.dash-section:hover .dash-section-body::after {
+  opacity: 0.85;
+}
+
+@media (max-width: 480px) {
+  .dash-section { padding: 28px 0; }
+  .dash-section-header { gap: 10px; margin-bottom: 18px; }
+  .dash-section-header h2 { font-size: 20px; }
+  .dash-section-header p { font-size: 12px; }
+}

@@ -1,0 +1,118 @@
+.app-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 32px 80px;
+}
+
+.state-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  color: var(--muted);
+}
+
+.app-header {
+  padding: 64px 0 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.app-header h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 40px;
+  margin: 10px 0 12px;
+  color: var(--text);
+}
+
+.header-sub {
+  font-family: var(--font-body);
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 640px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* backend connectivity status pill -- proves the architecture wires up */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.status-pill[data-state="ok"] .status-dot {
+  background: var(--accent-good);
+}
+
+.status-pill[data-state="ok"] {
+  color: var(--accent-good);
+}
+
+.status-pill[data-state="error"] .status-dot {
+  background: var(--accent-warn);
+}
+
+.status-pill[data-state="error"] {
+  color: var(--accent-warn);
+}
+
+.upload-drop {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 48px 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--card-bg);
+}
+
+.upload-drop strong {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.app-footer {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
