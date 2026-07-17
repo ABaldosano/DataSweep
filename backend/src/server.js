@@ -6,6 +6,7 @@ import healthRouter from "./routes/health.js";
 import sessionRouter from "./routes/session.js";
 import uploadRouter from "./routes/upload.js";
 import profileRouter from "./routes/profile.js";
+import cleanRouter from "./routes/clean.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -19,6 +20,7 @@ app.use("/api", healthRouter);
 app.use("/api", sessionRouter);
 app.use("/api", uploadRouter);
 app.use("/api", profileRouter);
+app.use("/api", cleanRouter);
 
 // Centralized error handler -- keeps stack traces out of responses.
 app.use((err, req, res, next) => {

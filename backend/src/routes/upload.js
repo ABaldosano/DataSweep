@@ -5,6 +5,7 @@ import { getOrCreateSession } from "../db/sessionStore.js";
 import { validateSqlFile } from "../sql/allowlistParser.js";
 import { loadCsvIntoDb } from "../sql/csvLoader.js";
 import { getSchemaSummary } from "../sql/introspect.js";
+import { snapshotTable } from "../sql/cleaner.js";
 
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
 
@@ -48,6 +49,9 @@ router.post("/upload", upload.single("file"), (req, res) => {
   }
 
   const tables = getSchemaSummary(db);
+  for (const table of tables) {
+    snapshotTable(db, table.name);
+  }
   res.json({ fileName: req.file.originalname, fileType: ext.slice(1), tables });
 });
 

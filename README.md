@@ -8,10 +8,10 @@ This is a companion piece to a separate data-*analytics* portfolio project;
 Datasweep is the data-*engineering* / tool-building half. It works with any
 tabular dataset by design.
 
-**Status:** step 3 of the build plan complete. Upload, allowlisted `.sql`
-parsing, `.csv` type inference, and a full per-column profiling engine
-(nulls, uniqueness, min/max/avg, samples) are live end to end. Cleaning
-actions and export are next.
+**Status:** step 4 of the build plan complete. Upload, allowlisted `.sql`
+parsing, `.csv` type inference, profiling, and now cleaning actions
+(duplicates, nulls, outliers) with preview-before-apply and a reset-to-
+original safety net are all live end to end. Export is next.
 
 ## Why this exists
 
@@ -46,6 +46,33 @@ disposable session — not the server, and not anyone else's data. Tested
 directly: a `.sql` file with a `DROP TABLE` mixed in among valid statements
 is rejected wholesale before anything executes (see `backend/src/sql/allowlistParser.js`).
 
+### Cleaning safety
+
+Every cleaning action (remove duplicates, handle nulls, remove outliers) is
+destructive by nature, so two rules apply everywhere in `backend/src/sql/cleaner.js`:
+
+- **Preview before apply.** Duplicate and outlier detection are separate,
+  read-only endpoints from the ones that actually delete/update rows. The
+  UI always shows what *would* happen before offering the button that
+  makes it happen.
+- **One-snapshot reset.** The moment a table is loaded, an internal
+  `__original` copy is taken (exact schema preserved, not just an
+  approximation — see the type-preservation note below). Any table can be
+  reset back to exactly what was uploaded, at any point, no matter how many
+  cleaning actions ran in between.
+
+One real bug this caught during testing, worth keeping in mind if you extend
+this: SQLite's `CREATE TABLE ... AS SELECT` doesn't reliably preserve
+declared column types (an `INTEGER` column came back as `INT` after a
+reset), which silently broke numeric-only actions like outlier detection
+against a reset table. Fixed by having the snapshot/reset functions reuse
+the original `CREATE TABLE` statement text (from `sqlite_master`) instead
+of relying on `AS SELECT`, plus switching every numeric check in the
+codebase from an exact string match to a type-*affinity* check
+(`backend/src/sql/types.js`) so it can't happen again elsewhere. Tested
+directly: a `.sql` file with a `DROP TABLE` mixed in among valid statements
+is rejected wholesale before anything executes (see `backend/src/sql/allowlistParser.js`).
+
 ## Project structure
 
 ```
@@ -67,12 +94,15 @@ Datasweep/
         │   ├── allowlistParser.js  splits + validates .sql -- CREATE TABLE/INSERT only
         │   ├── csvLoader.js        CSV parsing + column type inference
         │   ├── introspect.js       reads back schema (tables/columns/row counts)
-        │   └── profiler.js         per-column stats: nulls, uniqueness, min/max/avg, samples
+        │   ├── profiler.js         per-column stats: nulls, uniqueness, min/max/avg, samples
+        │   ├── cleaner.js          duplicates, null handling, outliers, snapshot/reset
+        │   └── types.js            shared type-affinity helpers (see note below)
         └── routes/
             ├── health.js         GET /api/health
             ├── session.js        GET /api/session/ping, GET /api/schema
             ├── upload.js         POST /api/upload -- .sql or .csv, 10MB cap
-            └── profile.js        GET /api/profile -- deep per-column stats
+            ├── profile.js        GET /api/profile -- deep per-column stats
+            └── clean.js          duplicate/null/outlier preview+apply, reset
 ```
 
 ## Running it locally
@@ -108,9 +138,10 @@ successfully.
 - [x] **Step 3 — Profiling engine**: per-column null counts, unique-value
       counts, min/max/avg for numerics, and sample values, rendered as a
       stats table per uploaded table
-- [ ] **Step 4 — Cleaning actions**: duplicate detection/removal (exact and
-      key-based), null handling strategies, outlier flagging, with
-      before/after previews and undo
+- [x] **Step 4 — Cleaning actions**: duplicate detection/removal (exact
+      full-row match), null handling (drop/mean/median/mode/custom value),
+      IQR-based outlier detection/removal -- every action previewed before
+      it runs, with a one-click reset back to the original upload
 - [ ] **Step 5 — Export**: cleaned `.csv`/`.sql` download with a before/after
       cleaning report
 - [ ] **Step 6 — Hardening**: upload size caps, query timeouts, rate limiting

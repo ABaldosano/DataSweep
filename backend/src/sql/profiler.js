@@ -1,4 +1,5 @@
 import { getSchemaSummary } from "./introspect.js";
+import { isNumericType } from "./types.js";
 
 /**
  * Computes profile stats for a single column: null count/%, distinct-value
@@ -14,7 +15,7 @@ function profileColumn(db, tableName, column, totalRows) {
     .get();
 
   const nullCount = totalRows - agg.nonNull;
-  const isNumeric = column.type === "INTEGER" || column.type === "REAL";
+  const isNumeric = isNumericType(column.type);
 
   let min = null;
   let max = null;

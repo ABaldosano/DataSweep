@@ -4,6 +4,7 @@ import ThemeToggle from "./components/ThemeToggle";
 import Section from "./components/Section";
 import UploadPanel from "./components/UploadPanel";
 import ProfilePanel from "./components/ProfilePanel";
+import CleanPanel from "./components/CleanPanel";
 import { apiFetch } from "./api/client";
 import { useTheme } from "./hooks/useTheme";
 import "./App.css";
@@ -12,7 +13,8 @@ export default function App() {
   const { theme, toggleTheme } = useTheme();
   const [backendStatus, setBackendStatus] = useState("checking");
   const [tables, setTables] = useState([]);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [profileTables, setProfileTables] = useState([]);
+  const [profileStatus, setProfileStatus] = useState("empty"); // empty | loading | ok | error
 
   useEffect(() => {
     let cancelled = false;
@@ -33,6 +35,19 @@ export default function App() {
       cancelled = true;
     };
   }, []);
+
+  async function reloadProfile() {
+    setProfileStatus("loading");
+    try {
+      const res = await apiFetch("/api/profile");
+      const data = await res.json();
+      setProfileTables(data.tables || []);
+      setTables(data.tables.map((t) => ({ name: t.name, rowCount: t.rowCount, columns: t.columns })));
+      setProfileStatus("ok");
+    } catch {
+      setProfileStatus("error");
+    }
+  }
 
   const statusLabel =
     backendStatus === "ok"
@@ -70,15 +85,21 @@ export default function App() {
         <Section index="01" title="Upload" subtitle="Accepts .sql (CREATE TABLE / INSERT only) or .csv">
           <UploadPanel
             tables={tables}
-            onUploaded={(newTables) => {
-              setTables(newTables);
-              setRefreshKey((k) => k + 1);
-            }}
+            onUploaded={() => reloadProfile()}
           />
         </Section>
 
         <Section index="02" title="Profile" subtitle="Per-column nulls, uniqueness, range, and samples">
-          <ProfilePanel refreshKey={refreshKey} />
+          <ProfilePanel tables={profileTables} status={profileStatus} />
+        </Section>
+
+        <Section index="03" title="Clean" subtitle="Preview first, then apply -- every table can be reset to its original upload">
+          <CleanPanel
+            tables={tables}
+            profileTables={profileTables}
+            status={profileStatus}
+            onChanged={() => reloadProfile()}
+          />
         </Section>
 
         <footer className="app-footer">

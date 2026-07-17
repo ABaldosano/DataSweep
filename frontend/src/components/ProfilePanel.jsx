@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { apiFetch } from "../api/client";
 import "./ProfilePanel.css";
 
 function formatValue(v) {
@@ -9,33 +7,8 @@ function formatValue(v) {
   return s.length > 18 ? `${s.slice(0, 18)}…` : s;
 }
 
-export default function ProfilePanel({ refreshKey }) {
-  const [tables, setTables] = useState([]);
-  const [status, setStatus] = useState("idle"); // idle | loading | error
-
-  useEffect(() => {
-    if (refreshKey === 0) return; // nothing uploaded yet
-
-    let cancelled = false;
-    setStatus("loading");
-
-    apiFetch("/api/profile")
-      .then((res) => res.json())
-      .then((data) => {
-        if (cancelled) return;
-        setTables(data.tables || []);
-        setStatus("idle");
-      })
-      .catch(() => {
-        if (!cancelled) setStatus("error");
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [refreshKey]);
-
-  if (refreshKey === 0) {
+export default function ProfilePanel({ tables, status }) {
+  if (status === "empty") {
     return <p className="profile-empty">Upload a file above to see column-level stats here.</p>;
   }
 

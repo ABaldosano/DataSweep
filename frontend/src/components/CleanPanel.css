@@ -1,0 +1,130 @@
+.clean-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.clean-table-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  background: var(--bg2);
+}
+
+.clean-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.clean-section {
+  margin-bottom: 16px;
+}
+
+.clean-section:last-child {
+  margin-bottom: 0;
+}
+
+.clean-section-title {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.clean-empty {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.clean-block-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.clean-block-row:last-child {
+  border-bottom: none;
+}
+
+.clean-block-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text);
+  min-width: 140px;
+}
+
+.clean-status {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.clean-status.dim {
+  color: var(--muted);
+}
+
+.clean-status.good {
+  color: var(--accent-good);
+}
+
+.clean-status.warn {
+  color: var(--accent-warn);
+}
+
+.clean-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.clean-btn:hover:not(:disabled) {
+  border-color: var(--gold-dim);
+}
+
+.clean-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.clean-btn.danger {
+  border-color: var(--accent-warn);
+  color: var(--accent-warn);
+}
+
+.clean-btn.ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.clean-select,
+.clean-input {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  color: var(--text);
+}
+
+.clean-input {
+  width: 100px;
+}
