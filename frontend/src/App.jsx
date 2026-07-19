@@ -5,6 +5,7 @@ import Section from "./components/Section";
 import UploadPanel from "./components/UploadPanel";
 import ProfilePanel from "./components/ProfilePanel";
 import CleanPanel from "./components/CleanPanel";
+import ExportPanel from "./components/ExportPanel";
 import { apiFetch } from "./api/client";
 import { useTheme } from "./hooks/useTheme";
 import "./App.css";
@@ -100,6 +101,10 @@ export default function App() {
             status={profileStatus}
             onChanged={() => reloadProfile()}
           />
+        </Section>
+
+        <Section index="04" title="Export" subtitle="Download the cleaned data, with a before/after summary">
+          <ExportPanel tables={tables} status={profileStatus} />
         </Section>
 
         <footer className="app-footer">

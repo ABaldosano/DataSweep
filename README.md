@@ -8,10 +8,11 @@ This is a companion piece to a separate data-*analytics* portfolio project;
 Datasweep is the data-*engineering* / tool-building half. It works with any
 tabular dataset by design.
 
-**Status:** step 4 of the build plan complete. Upload, allowlisted `.sql`
-parsing, `.csv` type inference, profiling, and now cleaning actions
-(duplicates, nulls, outliers) with preview-before-apply and a reset-to-
-original safety net are all live end to end. Export is next.
+**Status:** step 5 of the build plan complete. The full pipeline works end
+to end: upload → profile → clean → export, with a before/after report and
+downloadable `.csv`/`.sql`. Verified the exported `.sql` round-trips back
+through the same allowlist parser cleanly. Hardening and deploy polish are
+what's left.
 
 ## Why this exists
 
@@ -96,13 +97,15 @@ Datasweep/
         │   ├── introspect.js       reads back schema (tables/columns/row counts)
         │   ├── profiler.js         per-column stats: nulls, uniqueness, min/max/avg, samples
         │   ├── cleaner.js          duplicates, null handling, outliers, snapshot/reset
-        │   └── types.js            shared type-affinity helpers (see note below)
+        │   ├── types.js            shared type-affinity helpers (see note below)
+        │   └── exporter.js         .csv/.sql export + before/after cleaning report
         └── routes/
             ├── health.js         GET /api/health
             ├── session.js        GET /api/session/ping, GET /api/schema
             ├── upload.js         POST /api/upload -- .sql or .csv, 10MB cap
             ├── profile.js        GET /api/profile -- deep per-column stats
-            └── clean.js          duplicate/null/outlier preview+apply, reset
+            ├── clean.js          duplicate/null/outlier preview+apply, reset
+            └── export.js         GET /api/export/:table/{csv,sql,report}
 ```
 
 ## Running it locally
@@ -142,8 +145,11 @@ successfully.
       full-row match), null handling (drop/mean/median/mode/custom value),
       IQR-based outlier detection/removal -- every action previewed before
       it runs, with a one-click reset back to the original upload
-- [ ] **Step 5 — Export**: cleaned `.csv`/`.sql` download with a before/after
-      cleaning report
-- [ ] **Step 6 — Hardening**: upload size caps, query timeouts, rate limiting
+- [x] **Step 5 — Export**: `.csv`/`.sql` download plus a before/after
+      report (rows, nulls, duplicates) comparing the current table against
+      its original snapshot. The `.sql` export was verified to round-trip
+      cleanly back through the same allowlist parser.
+- [ ] **Step 6 — Hardening**: query timeouts and upload rate limiting
+      (upload size is already capped at 10MB in `routes/upload.js`)
 - [ ] **Step 7 — Polish**: screenshots/GIF, live demo link, deployed
       frontend + backend

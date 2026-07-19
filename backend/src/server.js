@@ -7,12 +7,13 @@ import sessionRouter from "./routes/session.js";
 import uploadRouter from "./routes/upload.js";
 import profileRouter from "./routes/profile.js";
 import cleanRouter from "./routes/clean.js";
+import exportRouter from "./routes/export.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 const ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
 
-app.use(cors({ origin: ORIGIN, exposedHeaders: ["x-datasweep-session"] }));
+app.use(cors({ origin: ORIGIN, exposedHeaders: ["x-datasweep-session", "content-disposition"] }));
 app.use(express.json());
 app.use(sessionMiddleware);
 
@@ -21,6 +22,7 @@ app.use("/api", sessionRouter);
 app.use("/api", uploadRouter);
 app.use("/api", profileRouter);
 app.use("/api", cleanRouter);
+app.use("/api", exportRouter);
 
 // Centralized error handler -- keeps stack traces out of responses.
 app.use((err, req, res, next) => {
