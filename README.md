@@ -8,12 +8,13 @@ This is a companion piece to a separate data-*analytics* portfolio project;
 Datasweep is the data-*engineering* / tool-building half. It works with any
 tabular dataset by design.
 
-**Status:** feature-complete and deploy-ready. Upload → profile → clean →
-export all work end to end, hardened for a public anonymous demo, and
-tested against genuinely different datasets beyond the retail data used
-during development (see "Tested against genuinely different datasets"
-below). What's left is actually deploying it and linking it from a
-portfolio.
+**Status:** feature-complete, deploy-ready, and verified from a clean
+install. Upload → profile → clean → export all work end to end, hardened
+for a public anonymous demo, tested against genuinely different datasets
+beyond the retail data used during development, and confirmed working by
+wiping every dependency and re-running the documented setup from scratch
+(see Roadmap, step 9, for the real bug that caught). What's left is
+actually deploying it and linking it from a portfolio.
 
 ## Why this exists
 
@@ -263,6 +264,19 @@ a clean 4xx with a specific message, not a stack trace or a 500.
       cases, and two adversarial inputs (duplicate primary key, ragged CSV
       row) -- all handled correctly with clean error messages, zero
       unhandled exceptions (see the table above)
+- [x] **Step 9 - Clean-slate install validation**: wiped every
+      `node_modules` and re-ran the exact documented setup commands from
+      scratch on a fresh copy. This caught a real bug: `npm run install:all`
+      installed the backend and frontend but never the *root* dependencies
+      (where `concurrently` itself lives), so `npm run dev` failed with
+      `concurrently: not found` immediately after following the README
+      exactly -- the same error hit during actual use. Fixed in
+      `package.json` (`install:all` now runs `npm install` at the root
+      too) and re-verified on another fresh copy: install, `npm run dev`,
+      and the full upload -> profile -> duplicates -> nulls -> outliers ->
+      export -> reset pipeline against `sample.sql`, plus the production
+      build and both error-rejection paths, all passed with zero backend
+      errors.
 - [ ] **Live demo**: actually deploying to Render + Vercel/Netlify and
       linking it here -- the one step that needs a human with hosting
       accounts, everything else is done
