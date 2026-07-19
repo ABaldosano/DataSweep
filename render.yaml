@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: datasweep-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: FRONTEND_ORIGIN
+        sync: false # set this to your deployed frontend URL after the first deploy

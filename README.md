@@ -8,16 +8,30 @@ This is a companion piece to a separate data-*analytics* portfolio project;
 Datasweep is the data-*engineering* / tool-building half. It works with any
 tabular dataset by design.
 
-**Status:** step 6 of the build plan complete. The full pipeline (upload →
-profile → clean → export) is hardened against the realistic abuse cases for
-a public anonymous demo: oversized files, upload spam, and unbounded
-concurrent sessions. Deploy polish is what's left.
+**Status:** feature-complete and deploy-ready. Upload → profile → clean →
+export all work end to end, hardened for a public anonymous demo, and
+tested against genuinely different datasets beyond the retail data used
+during development (see "Tested against genuinely different datasets"
+below). What's left is actually deploying it and linking it from a
+portfolio.
 
 ## Why this exists
 
 Data cleaning is most of what an analyst's time actually goes to, and it's
 usually invisible in portfolios. Datasweep makes that process a first-class,
 demoable tool instead of a hidden step.
+
+```mermaid
+flowchart LR
+    U[".sql / .csv upload"] --> V{"Allowlist check\n(.sql only)"}
+    V -- "CREATE TABLE / INSERT only" --> S
+    V -- "anything else" --> R["Rejected wholesale\nnothing executes"]
+    U -.csv.-> S
+    S["Session-scoped\nin-memory SQLite"] --> P["Profile\nnulls / unique / min-max"]
+    S --> C["Clean\nduplicates / nulls / outliers"]
+    C -->|"preview, then apply"| S
+    S --> E["Export\n.csv / .sql + before/after report"]
+```
 
 ## Architecture decisions (step 1)
 
@@ -99,14 +113,15 @@ The real fix is refusing the expensive work outright, before it starts:
 All three were verified directly rather than assumed: an oversized CSV
 returns a 413 immediately, the 21st upload within the rate-limit window
 returns 429 with the same session, and creating 205 sessions against a cap
-of 200 leaves exactly 200 active with the oldest evicted. Tested
-directly: a `.sql` file with a `DROP TABLE` mixed in among valid statements
-is rejected wholesale before anything executes (see `backend/src/sql/allowlistParser.js`).
+of 200 leaves exactly 200 active with the oldest evicted.
 
 ## Project structure
 
 ```
 Datasweep/
+├── package.json                root convenience script (npm run dev -- both servers)
+├── render.yaml                 Render deployment blueprint (backend)
+├── LICENSE                     MIT
 ├── frontend/                  React + Vite
 │   ├── src/
 │   │   ├── App.jsx             app shell + backend connectivity check
@@ -141,6 +156,16 @@ Datasweep/
 
 ## Running it locally
 
+**One command** (installs and runs both):
+```bash
+npm run install:all
+npm run dev
+# backend  -> http://localhost:4000
+# frontend -> http://localhost:5173
+```
+
+**Or separately**, if you want them in different terminals:
+
 **Backend**
 ```bash
 cd backend
@@ -161,6 +186,51 @@ npm run dev
 Open the frontend URL — the status pill in the header confirms the backend
 connection and proves a real sandboxed database session round-trips a query
 successfully.
+
+## Deploying
+
+The frontend is a static Vite build; the backend is a small Node/Express
+process. They deploy separately.
+
+**Backend (Render)** — a `render.yaml` blueprint is included at the repo
+root. In Render: New → Blueprint → point at this repo. It builds from
+`backend/` and runs `npm start`. After the first deploy, note the backend's
+URL (e.g. `https://datasweep-backend.onrender.com`) — you'll need it for the
+frontend build. (Railway or Fly.io work just as well; `render.yaml` is just
+the one included as an example.)
+
+**Frontend (Vercel or Netlify)** — point either at the `frontend/` directory
+as the project root. Build command `npm run build`, output directory `dist`.
+Set the build-time environment variable:
+```
+VITE_API_URL=https://your-backend-url.onrender.com
+```
+
+**Then close the loop on CORS** — set the backend's `FRONTEND_ORIGIN`
+environment variable (in Render's dashboard, not `.env`, since `.env` isn't
+committed) to your deployed frontend's URL, and redeploy the backend. Until
+this is set, the deployed frontend will show "backend unreachable" even
+though the backend itself is up, because the CORS check in `server.js`
+rejects the mismatched origin.
+
+## Tested against genuinely different datasets
+
+The point of this tool is that it doesn't know or care what the data is
+about — so it was deliberately tried against data that has nothing to do
+with the retail dataset used during development, plus a few adversarial
+inputs, all via real HTTP requests against the running server (not just
+unit tests):
+
+| Fixture | What it proved |
+|---|---|
+| An education CSV (students/majors/GPA) | Different domain, mixed types, embedded commas inside a quoted field (`"Art, Design"`), an apostrophe in a name, sparse nulls — all handled correctly |
+| A multi-table `.sql` dump (`authors` + `books`, with a `FOREIGN KEY`) | The allowlist parser and profiler both work across relational schemas, not just flat single-table CSVs; each table is independently profilable, cleanable, and exportable |
+| A CSV with quoted commas, escaped `""` quotes, an embedded newline inside a field, and Unicode (`café`, `édition`) | Parsing and the exported round-trip both preserve these correctly |
+| A `.sql` file with a duplicate `PRIMARY KEY` insert | Correctly rejected with SQLite's own constraint error, and the whole upload rolled back rather than partially applying |
+| A deliberately ragged CSV (wrong field count on one row) | Rejected with a precise, row-numbered error instead of silently misaligning columns |
+
+Zero unhandled exceptions across any of these — every failure case returned
+a clean 4xx with a specific message, not a stack trace or a 500.
 
 ## Roadmap
 
@@ -184,5 +254,15 @@ successfully.
       parsing happens, upload-specific rate limiting (20/15min per IP),
       general API rate limiting (300/15min), a 200-session ceiling with
       LRU eviction, and a server-level connection timeout
-- [ ] **Step 7 — Polish**: screenshots/GIF, live demo link, deployed
-      frontend + backend
+- [x] **Step 7 — Polish**: MIT license, Mermaid architecture diagram,
+      root-level `npm run dev` (starts both servers with one command via
+      `concurrently`), and a full deploy guide (Render blueprint for the
+      backend, Vercel/Netlify instructions for the frontend, CORS setup)
+- [x] **Step 8 — Real-variety testing**: verified against an education CSV,
+      a multi-table `.sql` dump with a `FOREIGN KEY`, Unicode/quoting edge
+      cases, and two adversarial inputs (duplicate primary key, ragged CSV
+      row) -- all handled correctly with clean error messages, zero
+      unhandled exceptions (see the table above)
+- [ ] **Live demo**: actually deploying to Render + Vercel/Netlify and
+      linking it here -- the one step that needs a human with hosting
+      accounts, everything else is done

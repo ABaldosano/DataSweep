@@ -1,0 +1,13 @@
+{
+  "name": "datasweep",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SQL data profiler and cleaner -- upload a .sql or .csv, get a schema profile, cleaning actions, and a cleaned export.",
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,magenta \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "install:all": "npm install --prefix backend && npm install --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
