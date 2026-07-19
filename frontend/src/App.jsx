@@ -71,7 +71,7 @@ export default function App() {
           </div>
           <p className="header-sub">
             Drop in a .sql dump or .csv file and get a schema profile, null and
-            duplicate detection, and a cleaned export — no dataset assumptions
+            duplicate detection, and a cleaned export - no dataset assumptions
             baked in. Every upload runs in its own sandboxed, disposable
             database session.
           </p>
@@ -108,7 +108,7 @@ export default function App() {
         </Section>
 
         <footer className="app-footer">
-          Datasweep — React + Vite frontend, Express + SQLite backend, per-session sandboxing
+          Datasweep - React + Vite frontend, Express + SQLite backend, per-session sandboxing
         </footer>
       </div>
     </>

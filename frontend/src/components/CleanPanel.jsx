@@ -12,7 +12,7 @@ const NULL_STRATEGIES = [
 ];
 
 function formatValue(v) {
-  if (v === null || v === undefined) return "—";
+  if (v === null || v === undefined) return "N/A";
   return typeof v === "number" ? v.toLocaleString() : String(v);
 }
 

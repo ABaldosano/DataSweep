@@ -21,7 +21,7 @@ function Stat({ label, before, after, goodDirection = "down" }) {
     <div className="export-stat">
       <span className="export-stat-label">{label}</span>
       <span className="export-stat-value">
-        {before === null ? "—" : before.toLocaleString()}
+        {before === null ? "N/A" : before.toLocaleString()}
         <span className="dim"> → </span>
         <span className={changed ? (improved ? "good" : "warn") : "dim"}>{after.toLocaleString()}</span>
       </span>

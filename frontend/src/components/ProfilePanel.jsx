@@ -1,7 +1,7 @@
 import "./ProfilePanel.css";
 
 function formatValue(v) {
-  if (v === null || v === undefined) return "—";
+  if (v === null || v === undefined) return "N/A";
   if (typeof v === "number") return v.toLocaleString();
   const s = String(v);
   return s.length > 18 ? `${s.slice(0, 18)}…` : s;

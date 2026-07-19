@@ -2,7 +2,7 @@
 
 A dataset-agnostic SQL data profiler and cleaner. Upload a `.sql` dump or
 `.csv` file, get a schema profile, null/duplicate/outlier detection, and a
-cleaned export — no assumptions about what the data is about.
+cleaned export - no assumptions about what the data is about.
 
 This is a companion piece to a separate data-*analytics* portfolio project;
 Datasweep is the data-*engineering* / tool-building half. It works with any
@@ -39,7 +39,7 @@ flowchart LR
 |---|---|---|
 | Frontend | React + Vite | Reuses the design system/components from the companion dashboard project for a consistent portfolio identity |
 | Backend | Node + Express | Same language across the stack; keeps the project approachable to review |
-| Database | SQLite (`better-sqlite3`), one **in-memory instance per session** | The core safety decision — see below |
+| Database | SQLite (`better-sqlite3`), one **in-memory instance per session** | The core safety decision - see below |
 | Session identity | UUID issued per client, round-tripped via an `x-datasweep-session` header | No cookies/auth needed for an anonymous demo tool |
 
 ### The sandboxing decision
@@ -52,11 +52,11 @@ avoids that at the architecture level rather than trying to filter bad input:
   (`src/db/sessionStore.js`). Nothing is shared or persisted across sessions.
 - Idle sessions are destroyed automatically after 15 minutes.
 - When `.sql` file parsing is added (next step), it will only ever accept
-  `CREATE TABLE` / `INSERT` statements — never arbitrary SQL execution — so an
+  `CREATE TABLE` / `INSERT` statements - never arbitrary SQL execution - so an
   uploaded file can populate a sandbox but never reach outside it.
 
 This means even a malicious or malformed upload can, at worst, break its own
-disposable session — not the server, and not anyone else's data. Tested
+disposable session - not the server, and not anyone else's data. Tested
 directly: a `.sql` file with a `DROP TABLE` mixed in among valid statements
 is rejected wholesale before anything executes (see `backend/src/sql/allowlistParser.js`).
 
@@ -71,7 +71,7 @@ destructive by nature, so two rules apply everywhere in `backend/src/sql/cleaner
   makes it happen.
 - **One-snapshot reset.** The moment a table is loaded, an internal
   `__original` copy is taken (exact schema preserved, not just an
-  approximation — see the type-preservation note below). Any table can be
+  approximation - see the type-preservation note below). Any table can be
   reset back to exactly what was uploaded, at any point, no matter how many
   cleaning actions ran in between.
 
@@ -183,7 +183,7 @@ npm run dev
 # -> http://localhost:5173
 ```
 
-Open the frontend URL — the status pill in the header confirms the backend
+Open the frontend URL - the status pill in the header confirms the backend
 connection and proves a real sandboxed database session round-trips a query
 successfully.
 
@@ -192,21 +192,21 @@ successfully.
 The frontend is a static Vite build; the backend is a small Node/Express
 process. They deploy separately.
 
-**Backend (Render)** — a `render.yaml` blueprint is included at the repo
+**Backend (Render)** - a `render.yaml` blueprint is included at the repo
 root. In Render: New → Blueprint → point at this repo. It builds from
 `backend/` and runs `npm start`. After the first deploy, note the backend's
-URL (e.g. `https://datasweep-backend.onrender.com`) — you'll need it for the
+URL (e.g. `https://datasweep-backend.onrender.com`) - you'll need it for the
 frontend build. (Railway or Fly.io work just as well; `render.yaml` is just
 the one included as an example.)
 
-**Frontend (Vercel or Netlify)** — point either at the `frontend/` directory
+**Frontend (Vercel or Netlify)** - point either at the `frontend/` directory
 as the project root. Build command `npm run build`, output directory `dist`.
 Set the build-time environment variable:
 ```
 VITE_API_URL=https://your-backend-url.onrender.com
 ```
 
-**Then close the loop on CORS** — set the backend's `FRONTEND_ORIGIN`
+**Then close the loop on CORS** - set the backend's `FRONTEND_ORIGIN`
 environment variable (in Render's dashboard, not `.env`, since `.env` isn't
 committed) to your deployed frontend's URL, and redeploy the backend. Until
 this is set, the deployed frontend will show "backend unreachable" even
@@ -216,49 +216,49 @@ rejects the mismatched origin.
 ## Tested against genuinely different datasets
 
 The point of this tool is that it doesn't know or care what the data is
-about — so it was deliberately tried against data that has nothing to do
+about - so it was deliberately tried against data that has nothing to do
 with the retail dataset used during development, plus a few adversarial
 inputs, all via real HTTP requests against the running server (not just
 unit tests):
 
 | Fixture | What it proved |
 |---|---|
-| An education CSV (students/majors/GPA) | Different domain, mixed types, embedded commas inside a quoted field (`"Art, Design"`), an apostrophe in a name, sparse nulls — all handled correctly |
+| An education CSV (students/majors/GPA) | Different domain, mixed types, embedded commas inside a quoted field (`"Art, Design"`), an apostrophe in a name, sparse nulls - all handled correctly |
 | A multi-table `.sql` dump (`authors` + `books`, with a `FOREIGN KEY`) | The allowlist parser and profiler both work across relational schemas, not just flat single-table CSVs; each table is independently profilable, cleanable, and exportable |
 | A CSV with quoted commas, escaped `""` quotes, an embedded newline inside a field, and Unicode (`café`, `édition`) | Parsing and the exported round-trip both preserve these correctly |
 | A `.sql` file with a duplicate `PRIMARY KEY` insert | Correctly rejected with SQLite's own constraint error, and the whole upload rolled back rather than partially applying |
 | A deliberately ragged CSV (wrong field count on one row) | Rejected with a precise, row-numbered error instead of silently misaligning columns |
 
-Zero unhandled exceptions across any of these — every failure case returned
+Zero unhandled exceptions across any of these - every failure case returned
 a clean 4xx with a specific message, not a stack trace or a 500.
 
 ## Roadmap
 
-- [x] **Step 1 — Architecture**: frontend/backend scaffold, per-session
+- [x] **Step 1 - Architecture**: frontend/backend scaffold, per-session
       sandboxed SQLite, proven connectivity
-- [x] **Step 2 — Upload & parsing**: `.sql` (allowlisted `CREATE TABLE` /
+- [x] **Step 2 - Upload & parsing**: `.sql` (allowlisted `CREATE TABLE` /
       `INSERT` only) and `.csv` ingestion into the session database, with
       drag-and-drop upload UI and live schema display
-- [x] **Step 3 — Profiling engine**: per-column null counts, unique-value
+- [x] **Step 3 - Profiling engine**: per-column null counts, unique-value
       counts, min/max/avg for numerics, and sample values, rendered as a
       stats table per uploaded table
-- [x] **Step 4 — Cleaning actions**: duplicate detection/removal (exact
+- [x] **Step 4 - Cleaning actions**: duplicate detection/removal (exact
       full-row match), null handling (drop/mean/median/mode/custom value),
       IQR-based outlier detection/removal -- every action previewed before
       it runs, with a one-click reset back to the original upload
-- [x] **Step 5 — Export**: `.csv`/`.sql` download plus a before/after
+- [x] **Step 5 - Export**: `.csv`/`.sql` download plus a before/after
       report (rows, nulls, duplicates) comparing the current table against
       its original snapshot. The `.sql` export was verified to round-trip
       cleanly back through the same allowlist parser.
-- [x] **Step 6 — Hardening**: 50k row/statement caps enforced before any
+- [x] **Step 6 - Hardening**: 50k row/statement caps enforced before any
       parsing happens, upload-specific rate limiting (20/15min per IP),
       general API rate limiting (300/15min), a 200-session ceiling with
       LRU eviction, and a server-level connection timeout
-- [x] **Step 7 — Polish**: MIT license, Mermaid architecture diagram,
+- [x] **Step 7 - Polish**: MIT license, Mermaid architecture diagram,
       root-level `npm run dev` (starts both servers with one command via
       `concurrently`), and a full deploy guide (Render blueprint for the
       backend, Vercel/Netlify instructions for the frontend, CORS setup)
-- [x] **Step 8 — Real-variety testing**: verified against an education CSV,
+- [x] **Step 8 - Real-variety testing**: verified against an education CSV,
       a multi-table `.sql` dump with a `FOREIGN KEY`, Unicode/quoting edge
       cases, and two adversarial inputs (duplicate primary key, ragged CSV
       row) -- all handled correctly with clean error messages, zero
