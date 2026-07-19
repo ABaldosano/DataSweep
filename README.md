@@ -8,11 +8,10 @@ This is a companion piece to a separate data-*analytics* portfolio project;
 Datasweep is the data-*engineering* / tool-building half. It works with any
 tabular dataset by design.
 
-**Status:** step 5 of the build plan complete. The full pipeline works end
-to end: upload → profile → clean → export, with a before/after report and
-downloadable `.csv`/`.sql`. Verified the exported `.sql` round-trips back
-through the same allowlist parser cleanly. Hardening and deploy polish are
-what's left.
+**Status:** step 6 of the build plan complete. The full pipeline (upload →
+profile → clean → export) is hardened against the realistic abuse cases for
+a public anonymous demo: oversized files, upload spam, and unbounded
+concurrent sessions. Deploy polish is what's left.
 
 ## Why this exists
 
@@ -70,7 +69,37 @@ against a reset table. Fixed by having the snapshot/reset functions reuse
 the original `CREATE TABLE` statement text (from `sqlite_master`) instead
 of relying on `AS SELECT`, plus switching every numeric check in the
 codebase from an exact string match to a type-*affinity* check
-(`backend/src/sql/types.js`) so it can't happen again elsewhere. Tested
+(`backend/src/sql/types.js`) so it can't happen again elsewhere.
+
+### Hardening (step 6)
+
+`better-sqlite3` is synchronous -- every query blocks Node's single thread
+until it finishes. That reshapes what "hardening" actually means here: a
+**request timeout can't help** against an expensive upload already being
+processed, because nothing can preempt synchronous work in progress. It can
+only close idle/hung connections (`server.setTimeout(30_000)` in
+`server.js`), which is worth having but isn't the real fix.
+
+The real fix is refusing the expensive work outright, before it starts:
+
+- **Row/statement caps** (`MAX_ROWS = 50,000` in `csvLoader.js`, reused for
+  `.sql` statement counts in `upload.js`) -- an oversized file is rejected
+  with a 413 before any parsing or DB writes happen, so it can never block
+  the event loop for other users.
+- **Upload-specific rate limiting** (`middleware/rateLimit.js`) -- a
+  tighter limit (20 / 15 min per IP) on `/api/upload` specifically, on top
+  of a broader general-API limit (300 / 15 min), since uploads are the one
+  endpoint doing real work.
+- **Session ceiling** (`MAX_SESSIONS = 200` in `sessionStore.js`) -- each
+  session holds a live in-memory SQLite instance, so unbounded session
+  creation is itself a memory-exhaustion path independent of file size.
+  Past the ceiling, the least-recently-used session is evicted to make room
+  for a new one.
+
+All three were verified directly rather than assumed: an oversized CSV
+returns a 413 immediately, the 21st upload within the rate-limit window
+returns 429 with the same session, and creating 205 sessions against a cap
+of 200 leaves exactly 200 active with the oldest evicted. Tested
 directly: a `.sql` file with a `DROP TABLE` mixed in among valid statements
 is rejected wholesale before anything executes (see `backend/src/sql/allowlistParser.js`).
 
@@ -88,8 +117,10 @@ Datasweep/
 │
 └── backend/                   Express + SQLite
     └── src/
-        ├── server.js            app entrypoint, CORS, error handling
-        ├── middleware/session.js   issues/reads the per-client session id
+        ├── server.js            app entrypoint, CORS, error handling, connection timeout
+        ├── middleware/
+        │   ├── session.js       issues/reads the per-client session id
+        │   └── rateLimit.js     general + upload-specific rate limits
         ├── db/sessionStore.js      per-session in-memory SQLite (the core decision)
         ├── sql/
         │   ├── allowlistParser.js  splits + validates .sql -- CREATE TABLE/INSERT only
@@ -149,7 +180,9 @@ successfully.
       report (rows, nulls, duplicates) comparing the current table against
       its original snapshot. The `.sql` export was verified to round-trip
       cleanly back through the same allowlist parser.
-- [ ] **Step 6 — Hardening**: query timeouts and upload rate limiting
-      (upload size is already capped at 10MB in `routes/upload.js`)
+- [x] **Step 6 — Hardening**: 50k row/statement caps enforced before any
+      parsing happens, upload-specific rate limiting (20/15min per IP),
+      general API rate limiting (300/15min), a 200-session ceiling with
+      LRU eviction, and a server-level connection timeout
 - [ ] **Step 7 — Polish**: screenshots/GIF, live demo link, deployed
       frontend + backend

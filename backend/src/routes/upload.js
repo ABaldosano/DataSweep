@@ -3,9 +3,10 @@ import multer from "multer";
 import path from "path";
 import { getOrCreateSession } from "../db/sessionStore.js";
 import { validateSqlFile } from "../sql/allowlistParser.js";
-import { loadCsvIntoDb } from "../sql/csvLoader.js";
+import { loadCsvIntoDb, MAX_ROWS } from "../sql/csvLoader.js";
 import { getSchemaSummary } from "../sql/introspect.js";
 import { snapshotTable } from "../sql/cleaner.js";
+import { uploadLimiter } from "../middleware/rateLimit.js";
 
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
 
@@ -16,7 +17,7 @@ const upload = multer({
 
 const router = Router();
 
-router.post("/upload", upload.single("file"), (req, res) => {
+router.post("/upload", uploadLimiter, upload.single("file"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded. Attach a .sql or .csv file as 'file'." });
   }
@@ -30,6 +31,11 @@ router.post("/upload", upload.single("file"), (req, res) => {
       const validation = validateSqlFile(text);
       if (!validation.valid) {
         return res.status(400).json({ error: validation.error });
+      }
+      if (validation.statements.length > MAX_ROWS) {
+        return res.status(413).json({
+          error: `File has ${validation.statements.length.toLocaleString()} statements, which is over the ${MAX_ROWS.toLocaleString()}-statement demo limit.`,
+        });
       }
 
       const runAll = db.transaction((statements) => {

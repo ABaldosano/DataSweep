@@ -9,6 +9,7 @@ import Database from "better-sqlite3";
  */
 
 const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes of inactivity
+const MAX_SESSIONS = 200; // ceiling on concurrent in-memory sandboxes
 
 const sessions = new Map(); // sessionId -> { db, lastUsed, timer }
 
@@ -21,10 +22,25 @@ function scheduleEviction(sessionId) {
   entry.timer.unref?.();
 }
 
+function evictLeastRecentlyUsed() {
+  let oldestId = null;
+  let oldestTime = Infinity;
+
+  for (const [id, entry] of sessions) {
+    if (entry.lastUsed < oldestTime) {
+      oldestTime = entry.lastUsed;
+      oldestId = id;
+    }
+  }
+
+  if (oldestId) destroySession(oldestId);
+}
+
 export function getOrCreateSession(sessionId) {
   let entry = sessions.get(sessionId);
 
   if (!entry) {
+    if (sessions.size >= MAX_SESSIONS) evictLeastRecentlyUsed();
     entry = { db: new Database(":memory:"), lastUsed: Date.now(), timer: null };
     sessions.set(sessionId, entry);
   }

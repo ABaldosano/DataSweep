@@ -1,5 +1,11 @@
 import Papa from "papaparse";
 
+// better-sqlite3 runs synchronously on the main thread, so a huge upload
+// doesn't just take a while -- it blocks every other request on the server
+// for the duration. A hard row cap is the actual mitigation here; a request
+// timeout wouldn't help since it can't preempt in-progress synchronous work.
+export const MAX_ROWS = 50_000;
+
 /**
  * Infers a SQLite column type from a column's sample values.
  * INTEGER if every non-empty value is a whole number, REAL if every
@@ -50,6 +56,12 @@ export function loadCsvIntoDb(db, csvText, tableNameHint) {
   const rows = parsed.data;
   if (rows.length === 0) {
     throw Object.assign(new Error("CSV file has no data rows."), { status: 400 });
+  }
+  if (rows.length > MAX_ROWS) {
+    throw Object.assign(
+      new Error(`CSV has ${rows.length.toLocaleString()} rows, which is over the ${MAX_ROWS.toLocaleString()}-row demo limit. Try a smaller sample.`),
+      { status: 413 }
+    );
   }
 
   const rawColumns = parsed.meta.fields || Object.keys(rows[0]);
