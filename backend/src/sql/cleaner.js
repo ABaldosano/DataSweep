@@ -15,8 +15,11 @@ function renamedCreateStatement(db, existingTableName, newTableName) {
     .prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?")
     .get(existingTableName);
   // Replace only the table-name token right after CREATE TABLE, leaving the
-  // column definitions (and their exact declared types) untouched.
-  return row.sql.replace(/CREATE TABLE\s+"?[\w]+"?/i, `CREATE TABLE "${newTableName}"`);
+  // column definitions (and their exact declared types) untouched. Matches
+  // a double-quoted identifier (may contain spaces, e.g. "Order Details"),
+  // a bracket-quoted identifier (T-SQL style, e.g. [Region] -- SQLite
+  // stores these verbatim rather than normalizing them), or a bare word.
+  return row.sql.replace(/CREATE TABLE\s+("[^"]+"|\[[^\]]+\]|\w+)/i, `CREATE TABLE "${newTableName}"`);
 }
 
 export function snapshotTable(db, tableName) {

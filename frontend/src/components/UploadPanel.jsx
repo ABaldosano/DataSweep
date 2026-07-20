@@ -13,6 +13,7 @@ function formatBytes(bytes) {
 export default function UploadPanel({ tables, onUploaded }) {
   const [status, setStatus] = useState("idle"); // idle | uploading | error
   const [error, setError] = useState(null);
+  const [summary, setSummary] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const [lastFile, setLastFile] = useState(null);
   const inputRef = useRef(null);
@@ -29,6 +30,7 @@ export default function UploadPanel({ tables, onUploaded }) {
 
     setStatus("uploading");
     setError(null);
+    setSummary(null);
     setLastFile({ name: file.name, size: file.size });
 
     const form = new FormData();
@@ -45,6 +47,7 @@ export default function UploadPanel({ tables, onUploaded }) {
       }
 
       setStatus("idle");
+      setSummary(data.loadSummary || null);
       onUploaded(data.tables);
     } catch (err) {
       setStatus("error");
@@ -95,6 +98,32 @@ export default function UploadPanel({ tables, onUploaded }) {
         <div className="upload-error">
           <span className="status-dot" />
           {error}
+        </div>
+      )}
+
+      {summary && (summary.skippedCount > 0 || summary.failedCount > 0) && (
+        <div className="upload-info">
+          <span className="status-dot" />
+          <div>
+            Loaded {summary.executedCount.toLocaleString()} of {summary.totalStatements.toLocaleString()} statements.
+            {summary.skippedCount > 0 && (
+              <> {summary.skippedCount.toLocaleString()} skipped (not <code>CREATE TABLE</code>/<code>INSERT</code> -- e.g. admin commands, views, stored procedures).</>
+            )}
+            {summary.failedCount > 0 && (
+              <> {summary.failedCount.toLocaleString()} failed to execute.</>
+            )}
+            {(summary.skippedExamples?.length > 0 || summary.failedExamples?.length > 0) && (
+              <details>
+                <summary>Show examples</summary>
+                {summary.skippedExamples?.map((s) => (
+                  <div className="upload-info-example" key={`s${s.index}`}>#{s.index} skipped: {s.preview}</div>
+                ))}
+                {summary.failedExamples?.map((f, i) => (
+                  <div className="upload-info-example" key={`f${i}`}>failed: {f.preview} -- {f.error}</div>
+                ))}
+              </details>
+            )}
+          </div>
         </div>
       )}
 

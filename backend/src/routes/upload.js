@@ -2,7 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import path from "path";
 import { getOrCreateSession } from "../db/sessionStore.js";
-import { validateSqlFile } from "../sql/allowlistParser.js";
+import { classifySqlFile } from "../sql/allowlistParser.js";
 import { loadCsvIntoDb, MAX_ROWS } from "../sql/csvLoader.js";
 import { getSchemaSummary } from "../sql/introspect.js";
 import { snapshotTable } from "../sql/cleaner.js";
@@ -26,24 +26,49 @@ router.post("/upload", uploadLimiter, upload.single("file"), (req, res) => {
   const text = req.file.buffer.toString("utf-8");
   const db = getOrCreateSession(req.sessionId);
 
+  let loadSummary = null;
+
   try {
     if (ext === ".sql") {
-      const validation = validateSqlFile(text);
-      if (!validation.valid) {
-        return res.status(400).json({ error: validation.error });
+      const { allowed, skipped, totalStatements } = classifySqlFile(text);
+
+      if (totalStatements === 0) {
+        return res.status(400).json({ error: "No SQL statements found in file." });
       }
-      if (validation.statements.length > MAX_ROWS) {
+      if (totalStatements > MAX_ROWS) {
         return res.status(413).json({
-          error: `File has ${validation.statements.length.toLocaleString()} statements, which is over the ${MAX_ROWS.toLocaleString()}-statement demo limit.`,
+          error: `File has ${totalStatements.toLocaleString()} statements, which is over the ${MAX_ROWS.toLocaleString()}-statement demo limit.`,
+        });
+      }
+      if (allowed.length === 0) {
+        return res.status(400).json({
+          error: `This file doesn't contain any CREATE TABLE or INSERT statements to load. Found ${skipped.length} other statement${skipped.length === 1 ? "" : "s"} (e.g. DROP, CREATE VIEW, CREATE PROCEDURE), which were skipped.`,
         });
       }
 
-      const runAll = db.transaction((statements) => {
-        for (const statement of statements) {
+      // Execute statement-by-statement rather than one all-or-nothing
+      // transaction: a single incompatible statement (rare but real, e.g.
+      // a genuinely unrecoverable syntax quirk) shouldn't cost you every
+      // other table that loaded fine.
+      const failed = [];
+      let executedCount = 0;
+      for (const statement of allowed) {
+        try {
           db.exec(statement);
+          executedCount++;
+        } catch (err) {
+          failed.push({ preview: statement.slice(0, 80).replace(/\s+/g, " "), error: err.message });
         }
-      });
-      runAll(validation.statements);
+      }
+
+      loadSummary = {
+        totalStatements,
+        executedCount,
+        skippedCount: skipped.length,
+        skippedExamples: skipped.slice(0, 5),
+        failedCount: failed.length,
+        failedExamples: failed.slice(0, 5),
+      };
     } else if (ext === ".csv") {
       const tableNameHint = path.basename(req.file.originalname, ext);
       loadCsvIntoDb(db, text, tableNameHint);
@@ -55,10 +80,17 @@ router.post("/upload", uploadLimiter, upload.single("file"), (req, res) => {
   }
 
   const tables = getSchemaSummary(db);
+  if (tables.length === 0) {
+    return res.status(400).json({
+      error: "Nothing loaded successfully. None of the statements in this file could be executed.",
+      ...loadSummary,
+    });
+  }
+
   for (const table of tables) {
     snapshotTable(db, table.name);
   }
-  res.json({ fileName: req.file.originalname, fileType: ext.slice(1), tables });
+  res.json({ fileName: req.file.originalname, fileType: ext.slice(1), tables, loadSummary });
 });
 
 // Multer error handling (e.g. file too large) doesn't reach the route handler above.

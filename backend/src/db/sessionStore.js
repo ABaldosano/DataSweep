@@ -41,7 +41,14 @@ export function getOrCreateSession(sessionId) {
 
   if (!entry) {
     if (sessions.size >= MAX_SESSIONS) evictLeastRecentlyUsed();
-    entry = { db: new Database(":memory:"), lastUsed: Date.now(), timer: null };
+    const db = new Database(":memory:");
+    // better-sqlite3 defaults foreign_keys ON (unlike vanilla SQLite). A
+    // bulk data-loading tool shouldn't fail on forward references or
+    // self-referencing rows inserted in file order -- the same reason
+    // real restore tools (pg_restore, mysqldump imports) disable FK
+    // checks during load.
+    db.pragma("foreign_keys = OFF");
+    entry = { db, lastUsed: Date.now(), timer: null };
     sessions.set(sessionId, entry);
   }
 

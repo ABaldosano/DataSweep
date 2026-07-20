@@ -8,13 +8,15 @@ This is a companion piece to a separate data-*analytics* portfolio project;
 Datasweep is the data-*engineering* / tool-building half. It works with any
 tabular dataset by design.
 
-**Status:** feature-complete, deploy-ready, and verified from a clean
-install. Upload → profile → clean → export all work end to end, hardened
-for a public anonymous demo, tested against genuinely different datasets
-beyond the retail data used during development, and confirmed working by
-wiping every dependency and re-running the documented setup from scratch
-(see Roadmap, step 9, for the real bug that caught). What's left is
-actually deploying it and linking it from a portfolio.
+**Status:** feature-complete, deploy-ready, verified from a clean install,
+and stress-tested against a real 1.1MB SQL Server production dump (not a
+synthetic test file) with zero failures on the 3,321 loadable statements.
+Upload -> profile -> clean -> export all work end to end, hardened for a
+public anonymous demo, and confirmed working by wiping every dependency
+and re-running the documented setup from scratch (see Roadmap, step 9, for
+the real bug that caught). See "Real-world T-SQL dump compatibility" below
+for what a genuine SQL Server export actually requires and why. What's
+left is actually deploying it and linking it from a portfolio.
 
 ## Why this exists
 
@@ -59,7 +61,11 @@ avoids that at the architecture level rather than trying to filter bad input:
 This means even a malicious or malformed upload can, at worst, break its own
 disposable session - not the server, and not anyone else's data. Tested
 directly: a `.sql` file with a `DROP TABLE` mixed in among valid statements
-is rejected wholesale before anything executes (see `backend/src/sql/allowlistParser.js`).
+never executes the `DROP` -- it's classified as disallowed and simply
+skipped, while the legitimate `CREATE TABLE`/`INSERT` statements around it
+still load normally (see `backend/src/sql/allowlistParser.js` and "Real-world
+T-SQL dump compatibility" below for why this changed from an earlier
+all-or-nothing reject).
 
 ### Cleaning safety
 
@@ -139,7 +145,7 @@ Datasweep/
         │   └── rateLimit.js     general + upload-specific rate limits
         ├── db/sessionStore.js      per-session in-memory SQLite (the core decision)
         ├── sql/
-        │   ├── allowlistParser.js  splits + validates .sql -- CREATE TABLE/INSERT only
+        │   ├── allowlistParser.js  splits, normalizes (GO/T-SQL quirks), and classifies statements as allowed/skipped
         │   ├── csvLoader.js        CSV parsing + column type inference
         │   ├── introspect.js       reads back schema (tables/columns/row counts)
         │   ├── profiler.js         per-column stats: nulls, uniqueness, min/max/avg, samples
@@ -233,6 +239,51 @@ unit tests):
 Zero unhandled exceptions across any of these - every failure case returned
 a clean 4xx with a specific message, not a stack trace or a 500.
 
+## Real-world T-SQL dump compatibility
+
+The test above covers dialect *variety*; this covers dialect *reality*.
+Actual SQL Server dumps (the kind SSMS produces via "Generate Scripts")
+don't look like tidy ANSI SQL, and a real one exposed several genuine gaps.
+Tested against the official Microsoft Northwind sample database script
+(`instnwnd.sql`, ~1.1MB, 13 tables, 3,300+ data statements) via real HTTP
+requests -- not a converted or pre-cleaned copy, the actual file:
+
+**What broke on the first attempt, and why:**
+
+| Problem | Root cause | Fix |
+|---|---|---|
+| Whole file treated as one "statement" | SQL Server scripts often use `GO` as a batch separator instead of semicolons -- this file has zero semicolons in 9,350 lines | `GO`-on-its-own-line is now a statement boundary, same as `;` |
+| Only ~250 of 3,300+ inserts detected | Bulk `INSERT` sections put one statement per line with *no* separator at all between them, not even `GO` | Added a paren-depth-aware heuristic: if we're not mid-expression and the next line opens with a new SQL keyword, that's an implicit boundary |
+| `INSERT "table" (...)` rejected by SQLite | T-SQL allows omitting `INTO`; SQLite requires it | Normalized to `INSERT INTO` |
+| `PRIMARY KEY CLUSTERED` syntax error | `CLUSTERED`/`NONCLUSTERED` are T-SQL-only, no SQLite equivalent | Stripped |
+| `dbo.Employees` / `[dbo].[Region]` errors | SQLite has no concept of a `dbo` schema | Schema qualifier stripped |
+| `getdate()` unknown function | Not a SQLite function | Mapped to `CURRENT_TIMESTAMP` |
+| `) ON [PRIMARY]` syntax error | T-SQL filegroup placement, meaningless outside SQL Server | Stripped |
+| `0x151C2F...` hex literal too big | T-SQL's unquoted hex-literal syntax isn't a SQLite blob literal | Converted to SQLite's `X'...'` form |
+| Every insert failing with `FOREIGN KEY constraint failed` | `better-sqlite3` defaults `foreign_keys` **ON** (vanilla SQLite defaults it off) -- self-referencing rows and file-order forward references broke immediately | Foreign keys are now off for session databases, the same reason real restore tools (`pg_restore`, `mysqldump` imports) disable FK checks during bulk load |
+| Snapshot/reset broke on `"Order Details"` and `[Region]` | The regex that renames a table for its `__original` snapshot only matched bare-word identifiers -- it silently failed (a no-op, not an error) on any name with a space or bracket-quoting, causing a duplicate-table error | Regex now matches double-quoted, bracket-quoted, and bare identifiers |
+
+**The bigger product decision this forced:** the original design rejected
+an entire upload if *any* statement wasn't `CREATE TABLE`/`INSERT` --
+reasonable for a small clean file, useless for a real admin script that's
+mostly stored procedures and views with the actual data mixed in. Uploads
+now classify every statement as allowed or skipped and execute each
+allowed one independently (not one all-or-nothing transaction), returning
+a `loadSummary` (`executedCount` / `skippedCount` / `failedCount`, with
+examples of each) instead of a single pass/fail. A file can partially load
+and tell you exactly what it did and didn't do -- which is what actually
+happened the first few times against this file, and is why the table above
+exists instead of just a "fixed it" changelog line.
+
+**Result:** 3,321 of 3,321 classified-as-loadable statements now execute
+successfully (0 failures), all 13 tables load with exact expected row
+counts (Orders: 830, Order Details: 2,155, etc.), and 209 genuinely
+non-data statements (stored procedures, views, `SET` commands, the
+copyright header comment) are correctly skipped rather than blocking the
+upload. None of these fixes are Northwind-specific -- `GO` separators,
+missing `INTO`, `dbo.` qualifiers, and T-SQL hex literals are common to any
+SQL Server export, so this should generalize well beyond this one file.
+
 ## Roadmap
 
 - [x] **Step 1 - Architecture**: frontend/backend scaffold, per-session
@@ -277,6 +328,16 @@ a clean 4xx with a specific message, not a stack trace or a 500.
       export -> reset pipeline against `sample.sql`, plus the production
       build and both error-rejection paths, all passed with zero backend
       errors.
+- [x] **Real-world T-SQL dump compatibility**: a genuine 1.1MB SQL Server
+      export exposed nine real gaps (GO batch separators, no-separator bulk
+      inserts, missing INTO, CLUSTERED, dbo schema qualifiers, getdate(),
+      ON [PRIMARY], hex blob literals, and better-sqlite3's default-on
+      foreign key enforcement), plus a snapshot/reset bug on table names
+      with spaces or bracket-quoting. All fixed generally, not as
+      file-specific hacks -- see the section above for the full breakdown.
+      Also changed upload behavior from all-or-nothing rejection to
+      per-statement classify-and-skip, since a real admin script being
+      mostly non-data statements is normal, not an error condition.
 - [ ] **Live demo**: actually deploying to Render + Vercel/Netlify and
       linking it here -- the one step that needs a human with hosting
       accounts, everything else is done

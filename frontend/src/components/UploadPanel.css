@@ -57,6 +57,53 @@
   background: var(--accent-warn);
 }
 
+.upload-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-data);
+  background: var(--accent-data-soft);
+  line-height: 1.6;
+}
+
+.upload-info .status-dot {
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--accent-data);
+}
+
+.upload-info code {
+  font-family: var(--font-mono);
+  background: rgba(0, 0, 0, 0.08);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.upload-info details {
+  margin-top: 8px;
+}
+
+.upload-info summary {
+  cursor: pointer;
+  color: var(--text);
+}
+
+.upload-info-example {
+  margin-top: 4px;
+  padding-left: 12px;
+  color: var(--muted);
+  word-break: break-word;
+}
+
 .schema-list {
   display: flex;
   flex-direction: column;
