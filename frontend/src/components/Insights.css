@@ -1,0 +1,32 @@
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.insight-card {
+  background: var(--card-bg);
+  padding: 20px 22px;
+  display: flex;
+  gap: 14px;
+}
+
+.insight-mark {
+  font-family: var(--font-mono);
+  color: var(--gold);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.insight-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+@media (max-width: 760px) {
+  .insights-grid { grid-template-columns: 1fr; }
+}

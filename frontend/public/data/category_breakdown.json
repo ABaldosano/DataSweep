@@ -1,0 +1,44 @@
+[
+  {
+    "category": "Fashion accessories",
+    "revenue": 489480.9,
+    "profit": 192314.89,
+    "orders": 4538,
+    "avg_rating": 5.78
+  },
+  {
+    "category": "Home and lifestyle",
+    "revenue": 489250.06,
+    "profit": 192213.64,
+    "orders": 4520,
+    "avg_rating": 5.74
+  },
+  {
+    "category": "Electronic accessories",
+    "revenue": 78175.03,
+    "profit": 30772.49,
+    "orders": 419,
+    "avg_rating": 5.91
+  },
+  {
+    "category": "Food and beverages",
+    "revenue": 53471.28,
+    "profit": 21552.86,
+    "orders": 174,
+    "avg_rating": 7.11
+  },
+  {
+    "category": "Sports and travel",
+    "revenue": 52497.93,
+    "profit": 20613.81,
+    "orders": 166,
+    "avg_rating": 6.92
+  },
+  {
+    "category": "Health and beauty",
+    "revenue": 46851.18,
+    "profit": 18671.73,
+    "orders": 152,
+    "avg_rating": 7.0
+  }
+]

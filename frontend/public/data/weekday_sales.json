@@ -1,0 +1,37 @@
+[
+  {
+    "weekday": "Saturday",
+    "transactions": 1441,
+    "revenue": 185624.39
+  },
+  {
+    "weekday": "Tuesday",
+    "transactions": 1468,
+    "revenue": 181217.71
+  },
+  {
+    "weekday": "Wednesday",
+    "transactions": 1459,
+    "revenue": 174515.7
+  },
+  {
+    "weekday": "Thursday",
+    "transactions": 1463,
+    "revenue": 174092.76
+  },
+  {
+    "weekday": "Sunday",
+    "transactions": 1411,
+    "revenue": 171075.85
+  },
+  {
+    "weekday": "Friday",
+    "transactions": 1405,
+    "revenue": 168103.61
+  },
+  {
+    "weekday": "Monday",
+    "transactions": 1322,
+    "revenue": 155096.36
+  }
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "branch": "WALM009",
+    "city": "Plano",
+    "revenue": 25688.34,
+    "orders": 235,
+    "avg_rating": 5.34
+  },
+  {
+    "branch": "WALM074",
+    "city": "Weslaco",
+    "revenue": 25555.42,
+    "orders": 210,
+    "avg_rating": 5.18
+  },
+  {
+    "branch": "WALM003",
+    "city": "San Antonio",
+    "revenue": 24950.56,
+    "orders": 186,
+    "avg_rating": 5.37
+  },
+  {
+    "branch": "WALM058",
+    "city": "Port Arthur",
+    "revenue": 24524.37,
+    "orders": 239,
+    "avg_rating": 5.3
+  },
+  {
+    "branch": "WALM030",
+    "city": "Richardson",
+    "revenue": 24460.6,
+    "orders": 229,
+    "avg_rating": 5.4
+  },
+  {
+    "branch": "WALM069",
+    "city": "Rockwall",
+    "revenue": 24077.7,
+    "orders": 222,
+    "avg_rating": 5.36
+  },
+  {
+    "branch": "WALM029",
+    "city": "Round Rock",
+    "revenue": 23327.34,
+    "orders": 196,
+    "avg_rating": 5.24
+  },
+  {
+    "branch": "WALM084",
+    "city": "Schertz",
+    "revenue": 23095.43,
+    "orders": 205,
+    "avg_rating": 5.32
+  },
+  {
+    "branch": "WALM075",
+    "city": "San Marcos",
+    "revenue": 22124.51,
+    "orders": 188,
+    "avg_rating": 5.08
+  },
+  {
+    "branch": "WALM089",
+    "city": "Southlake",
+    "revenue": 21267.06,
+    "orders": 182,
+    "avg_rating": 5.31
+  }
+]

@@ -1,0 +1,19 @@
+.chart-frame {
+  position: relative;
+  width: 100%;
+  height: 320px;
+}
+
+.chart-frame--compact {
+  height: 280px;
+}
+
+@media (max-width: 720px) {
+  .chart-frame { height: 260px; }
+  .chart-frame--compact { height: 240px; }
+}
+
+@media (max-width: 480px) {
+  .chart-frame { height: 220px; }
+  .chart-frame--compact { height: 200px; }
+}

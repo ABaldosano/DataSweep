@@ -3,12 +3,13 @@ import multer from "multer";
 import path from "path";
 import { getOrCreateSession } from "../db/sessionStore.js";
 import { classifySqlFile } from "../sql/allowlistParser.js";
+import { normalizeStatement } from "../sql/dialectNormalizer.js";
 import { loadCsvIntoDb, MAX_ROWS } from "../sql/csvLoader.js";
 import { getSchemaSummary } from "../sql/introspect.js";
 import { snapshotTable } from "../sql/cleaner.js";
 import { uploadLimiter } from "../middleware/rateLimit.js";
 
-const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_UPLOAD_BYTES = 500 * 1024 * 1024; // 500 MB
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -54,7 +55,7 @@ router.post("/upload", uploadLimiter, upload.single("file"), (req, res) => {
       let executedCount = 0;
       for (const statement of allowed) {
         try {
-          db.exec(statement);
+          db.exec(normalizeStatement(statement));
           executedCount++;
         } catch (err) {
           failed.push({ preview: statement.slice(0, 80).replace(/\s+/g, " "), error: err.message });

@@ -1,0 +1,20 @@
+[
+  {
+    "payment_method": "Credit card",
+    "transactions": 4256,
+    "revenue": 488821.02,
+    "items_sold": 9567
+  },
+  {
+    "payment_method": "Ewallet",
+    "transactions": 3881,
+    "revenue": 457316.07,
+    "items_sold": 8932
+  },
+  {
+    "payment_method": "Cash",
+    "transactions": 1832,
+    "revenue": 263589.29,
+    "items_sold": 4984
+  }
+]

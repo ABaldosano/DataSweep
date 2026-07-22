@@ -1,0 +1,27 @@
+[
+  {
+    "year": "2019",
+    "revenue": 307587.38,
+    "growth_pct": null
+  },
+  {
+    "year": "2020",
+    "revenue": 219423.0,
+    "growth_pct": -28.66
+  },
+  {
+    "year": "2021",
+    "revenue": 233051.0,
+    "growth_pct": 6.21
+  },
+  {
+    "year": "2022",
+    "revenue": 217405.0,
+    "growth_pct": -6.71
+  },
+  {
+    "year": "2023",
+    "revenue": 232260.0,
+    "growth_pct": 6.83
+  }
+]

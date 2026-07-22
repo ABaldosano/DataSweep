@@ -1,0 +1,308 @@
+[
+  {
+    "month": "2019-01",
+    "revenue": 110754.16,
+    "profit": 43601.6,
+    "orders": 352
+  },
+  {
+    "month": "2019-02",
+    "revenue": 92589.88,
+    "profit": 36725.62,
+    "orders": 303
+  },
+  {
+    "month": "2019-03",
+    "revenue": 104243.34,
+    "profit": 41165.79,
+    "orders": 345
+  },
+  {
+    "month": "2020-01",
+    "revenue": 6771.0,
+    "profit": 2713.65,
+    "orders": 73
+  },
+  {
+    "month": "2020-02",
+    "revenue": 7035.0,
+    "profit": 2653.44,
+    "orders": 75
+  },
+  {
+    "month": "2020-03",
+    "revenue": 6188.0,
+    "profit": 2450.76,
+    "orders": 65
+  },
+  {
+    "month": "2020-04",
+    "revenue": 7218.0,
+    "profit": 2857.86,
+    "orders": 73
+  },
+  {
+    "month": "2020-05",
+    "revenue": 8548.0,
+    "profit": 3258.54,
+    "orders": 77
+  },
+  {
+    "month": "2020-06",
+    "revenue": 5434.0,
+    "profit": 2083.11,
+    "orders": 63
+  },
+  {
+    "month": "2020-07",
+    "revenue": 6880.0,
+    "profit": 2762.4,
+    "orders": 75
+  },
+  {
+    "month": "2020-08",
+    "revenue": 16817.0,
+    "profit": 6781.35,
+    "orders": 171
+  },
+  {
+    "month": "2020-09",
+    "revenue": 15345.0,
+    "profit": 6010.05,
+    "orders": 154
+  },
+  {
+    "month": "2020-10",
+    "revenue": 18258.0,
+    "profit": 7217.01,
+    "orders": 176
+  },
+  {
+    "month": "2020-11",
+    "revenue": 60146.0,
+    "profit": 23376.78,
+    "orders": 605
+  },
+  {
+    "month": "2020-12",
+    "revenue": 60783.0,
+    "profit": 23576.58,
+    "orders": 604
+  },
+  {
+    "month": "2021-01",
+    "revenue": 7568.0,
+    "profit": 2971.59,
+    "orders": 76
+  },
+  {
+    "month": "2021-02",
+    "revenue": 8000.0,
+    "profit": 3247.77,
+    "orders": 71
+  },
+  {
+    "month": "2021-03",
+    "revenue": 7494.0,
+    "profit": 3065.25,
+    "orders": 75
+  },
+  {
+    "month": "2021-04",
+    "revenue": 6378.0,
+    "profit": 2450.97,
+    "orders": 69
+  },
+  {
+    "month": "2021-05",
+    "revenue": 7028.0,
+    "profit": 2845.86,
+    "orders": 68
+  },
+  {
+    "month": "2021-06",
+    "revenue": 6395.0,
+    "profit": 2556.15,
+    "orders": 63
+  },
+  {
+    "month": "2021-07",
+    "revenue": 8367.0,
+    "profit": 3336.06,
+    "orders": 81
+  },
+  {
+    "month": "2021-08",
+    "revenue": 16683.0,
+    "profit": 6867.39,
+    "orders": 171
+  },
+  {
+    "month": "2021-09",
+    "revenue": 17787.0,
+    "profit": 7474.92,
+    "orders": 179
+  },
+  {
+    "month": "2021-10",
+    "revenue": 20793.0,
+    "profit": 8131.2,
+    "orders": 201
+  },
+  {
+    "month": "2021-11",
+    "revenue": 59628.0,
+    "profit": 23340.06,
+    "orders": 602
+  },
+  {
+    "month": "2021-12",
+    "revenue": 66930.0,
+    "profit": 25810.47,
+    "orders": 647
+  },
+  {
+    "month": "2022-01",
+    "revenue": 5679.0,
+    "profit": 2282.79,
+    "orders": 62
+  },
+  {
+    "month": "2022-02",
+    "revenue": 8476.0,
+    "profit": 3542.49,
+    "orders": 78
+  },
+  {
+    "month": "2022-03",
+    "revenue": 7108.0,
+    "profit": 2822.13,
+    "orders": 71
+  },
+  {
+    "month": "2022-04",
+    "revenue": 5593.0,
+    "profit": 2138.34,
+    "orders": 64
+  },
+  {
+    "month": "2022-05",
+    "revenue": 7789.0,
+    "profit": 3009.42,
+    "orders": 75
+  },
+  {
+    "month": "2022-06",
+    "revenue": 6356.0,
+    "profit": 2500.89,
+    "orders": 67
+  },
+  {
+    "month": "2022-07",
+    "revenue": 6895.0,
+    "profit": 2824.74,
+    "orders": 69
+  },
+  {
+    "month": "2022-08",
+    "revenue": 16788.0,
+    "profit": 6707.43,
+    "orders": 162
+  },
+  {
+    "month": "2022-09",
+    "revenue": 14808.0,
+    "profit": 5863.47,
+    "orders": 148
+  },
+  {
+    "month": "2022-10",
+    "revenue": 17414.0,
+    "profit": 6871.17,
+    "orders": 180
+  },
+  {
+    "month": "2022-11",
+    "revenue": 61687.0,
+    "profit": 23759.94,
+    "orders": 621
+  },
+  {
+    "month": "2022-12",
+    "revenue": 58812.0,
+    "profit": 22736.61,
+    "orders": 631
+  },
+  {
+    "month": "2023-01",
+    "revenue": 6709.0,
+    "profit": 2571.27,
+    "orders": 67
+  },
+  {
+    "month": "2023-02",
+    "revenue": 6567.0,
+    "profit": 2695.02,
+    "orders": 56
+  },
+  {
+    "month": "2023-03",
+    "revenue": 6659.0,
+    "profit": 2593.05,
+    "orders": 66
+  },
+  {
+    "month": "2023-04",
+    "revenue": 6079.0,
+    "profit": 2371.17,
+    "orders": 69
+  },
+  {
+    "month": "2023-05",
+    "revenue": 7976.0,
+    "profit": 3370.89,
+    "orders": 71
+  },
+  {
+    "month": "2023-06",
+    "revenue": 7460.0,
+    "profit": 2881.26,
+    "orders": 65
+  },
+  {
+    "month": "2023-07",
+    "revenue": 6938.0,
+    "profit": 2707.86,
+    "orders": 72
+  },
+  {
+    "month": "2023-08",
+    "revenue": 18606.0,
+    "profit": 7711.02,
+    "orders": 175
+  },
+  {
+    "month": "2023-09",
+    "revenue": 17603.0,
+    "profit": 7164.54,
+    "orders": 173
+  },
+  {
+    "month": "2023-10",
+    "revenue": 18147.0,
+    "profit": 7235.04,
+    "orders": 169
+  },
+  {
+    "month": "2023-11",
+    "revenue": 63424.0,
+    "profit": 25047.93,
+    "orders": 601
+  },
+  {
+    "month": "2023-12",
+    "revenue": 66092.0,
+    "profit": 25398.72,
+    "orders": 643
+  }
+]
