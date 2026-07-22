@@ -1,45 +1,28 @@
-.overview-grid {
+.overview-dashboard {
   display: flex;
-  flex-direction: column;
   gap: 20px;
+  align-items: flex-start;
 }
 
-.overview-stat-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-.overview-stat-card {
+.overview-main {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 16px 18px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg2);
-}
-
-.overview-stat-label {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--muted);
-}
-
-.overview-stat-value {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 26px;
-  color: var(--text);
-}
-
-.overview-panels {
-  display: grid;
-  grid-template-columns: 1.3fr 0.7fr 1fr;
   gap: 16px;
-  align-items: stretch;
+}
+
+.overview-row {
+  display: grid;
+  gap: 16px;
+}
+
+.overview-row-top {
+  grid-template-columns: 1fr 1fr;
+}
+
+.overview-row-bottom {
+  grid-template-columns: 0.8fr 1.2fr 1fr;
 }
 
 .overview-card {
@@ -65,11 +48,66 @@
   justify-content: center;
 }
 
+.overview-card-wide {
+  min-height: 260px;
+}
+
+.overview-snapshot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.overview-snapshot-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 8px;
+}
+
+.overview-snapshot-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.overview-snapshot-row span:first-child {
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+}
+
+.overview-snapshot-row span:last-child {
+  color: var(--text);
+  font-size: 16px;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.overview-schema-section {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg2);
+  padding: 20px 22px;
+}
+
+.overview-schema-section h3 {
+  margin: 0 0 16px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+}
+
 @media (max-width: 900px) {
-  .overview-stat-row {
-    grid-template-columns: repeat(2, 1fr);
+  .overview-dashboard {
+    flex-direction: column;
   }
-  .overview-panels {
+  .overview-row-top,
+  .overview-row-bottom {
     grid-template-columns: 1fr;
   }
 }

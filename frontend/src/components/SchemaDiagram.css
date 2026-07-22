@@ -1,0 +1,141 @@
+.schema-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.schema-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.schema-card {
+  min-width: 220px;
+  flex: 1 1 220px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg2);
+  overflow: hidden;
+}
+
+.schema-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card-bg);
+}
+
+.schema-card-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--text);
+}
+
+.schema-card-rows {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.schema-card-columns {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+
+.schema-card-columns li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.schema-card-columns li:not(:last-child) {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.schema-col-name {
+  color: var(--text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.schema-col-type {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.schema-key-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 999px;
+  color: var(--bg);
+  flex-shrink: 0;
+}
+
+.schema-key-badge.pk {
+  background: var(--gold);
+}
+
+.schema-key-badge.fk {
+  background: var(--accent-data);
+}
+
+.schema-relationships {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.schema-relationships-title {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.schema-relationship-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schema-relationship-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.rel-from {
+  color: var(--text);
+}
+
+.rel-arrow {
+  color: var(--gold);
+}
+
+.rel-to {
+  color: var(--accent-data);
+  font-weight: 600;
+}

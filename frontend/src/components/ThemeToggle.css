@@ -2,15 +2,16 @@
   background: none;
   border: 1px solid var(--border);
   cursor: pointer;
-  width: 46px;
+  width: 56px;
   height: 26px;
   border-radius: 13px;
   position: relative;
-  transition: border-color 0.2s, transform 0.15s;
   flex-shrink: 0;
+  max-width: 100%;
+  transition: border-color 0.2s, transform 0.15s;
 }
 .theme-toggle:hover { border-color: var(--gold); }
-.theme-toggle:active { transform: scale(0.94); }
+.theme-toggle:active { transform: scale(0.96); }
 
 .theme-toggle::before,
 .theme-toggle::after {
@@ -24,8 +25,8 @@
   pointer-events: none;
   transition: color 0.2s;
 }
-.theme-toggle::before { content: "LT"; right: calc(100% + 9px); }
-.theme-toggle::after { content: "DK"; left: calc(100% + 9px); }
+.theme-toggle::before { content: "LT"; left: 8px; }
+.theme-toggle::after { content: "DK"; right: 8px; }
 [data-theme="light"] .theme-toggle::before { color: var(--gold); }
 [data-theme="dark"] .theme-toggle::after { color: var(--gold); }
 
@@ -39,8 +40,14 @@
   background: var(--gold);
   transition: transform 0.25s ease;
 }
-[data-theme="dark"] .toggle-thumb { transform: translateX(20px); }
+[data-theme="dark"] .toggle-thumb { transform: translateX(30px); }
 
-@media (max-width: 560px) {
-  .theme-toggle::before, .theme-toggle::after { display: none; }
+/* collapsed sidebar has no room for the LT/DK labels -- drop to a plain switch */
+.sidebar.collapsed .theme-toggle {
+  width: 36px;
 }
+.sidebar.collapsed .theme-toggle::before,
+.sidebar.collapsed .theme-toggle::after {
+  display: none;
+}
+[data-theme="dark"] .sidebar.collapsed .toggle-thumb { transform: translateX(10px); }

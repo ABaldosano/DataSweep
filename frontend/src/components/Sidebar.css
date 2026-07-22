@@ -35,14 +35,8 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--gold);
-  color: var(--bg);
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 12px;
+  display: block;
+  object-fit: cover;
   flex-shrink: 0;
 }
 
