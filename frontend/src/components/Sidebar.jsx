@@ -31,7 +31,7 @@ function Icon({ name }) {
 
 export default function Sidebar({ active, onSelect, theme, onToggleTheme, backendStatus, collapsed, onToggleCollapsed }) {
   const statusLabel =
-    backendStatus === "ok" ? "connected" : backendStatus === "error" ? "unreachable" : "checking…";
+    backendStatus === "ok" ? "ready" : backendStatus === "error" ? "offline" : "checking…";
 
   return (
     <aside className={`sidebar${collapsed ? " collapsed" : ""}`}>

@@ -56,7 +56,7 @@
   margin: 0;
 }
 
-/* backend connectivity status pill -- proves the architecture wires up */
+/* connection status pill in the sidebar */
 .status-pill {
   display: inline-flex;
   align-items: center;

@@ -58,10 +58,10 @@ function TableExportCard({ table }) {
       <div className="export-table-header">
         <span className="schema-table-name">{table.name}</span>
         <div className="export-buttons">
-          <button className="clean-btn" onClick={() => download("csv")} disabled={downloading === "csv"}>
+          <button className="clean-btn primary" onClick={() => download("csv")} disabled={downloading === "csv"}>
             {downloading === "csv" ? "Preparing…" : "Download .csv"}
           </button>
-          <button className="clean-btn" onClick={() => download("sql")} disabled={downloading === "sql"}>
+          <button className="clean-btn primary" onClick={() => download("sql")} disabled={downloading === "sql"}>
             {downloading === "sql" ? "Preparing…" : "Download .sql"}
           </button>
         </div>

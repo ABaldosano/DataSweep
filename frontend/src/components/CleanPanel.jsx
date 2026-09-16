@@ -103,7 +103,7 @@ function NullColumnBlock({ table, column, nullCount, nullPct, onChanged }) {
           onChange={(e) => setValue(e.target.value)}
         />
       )}
-      <button className="clean-btn" onClick={apply} disabled={applying}>
+      <button className="clean-btn primary" onClick={apply} disabled={applying}>
         {applying ? "Applying…" : "Apply"}
       </button>
       {result?.error && <span className="clean-status warn">{result.error}</span>}

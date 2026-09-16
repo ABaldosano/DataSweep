@@ -4,6 +4,7 @@ import DonutChart from "./charts/DonutChart";
 import Meter from "./charts/Meter";
 import TableFilterPanel from "./TableFilterPanel";
 import SchemaDiagram from "./SchemaDiagram";
+import ERDView from "./ERDView";
 import "./OverviewPanel.css";
 
 // Pure presentational aggregation over data App already fetches -- no new
@@ -151,6 +152,11 @@ export default function OverviewPanel({ tables, profileTables, status }) {
             <div className="overview-schema-section">
               <h3>Tables &amp; keys</h3>
               <SchemaDiagram tables={filteredProfileTables} />
+            </div>
+
+            <div className="overview-schema-section">
+              <h3>Entity relationship diagram</h3>
+              <ERDView tables={filteredProfileTables} />
             </div>
           </>
         )}

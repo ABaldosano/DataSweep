@@ -24,6 +24,9 @@
   --accent-good: #4f6b52;
   --accent-data-soft: rgba(168, 130, 63, 0.14);
 
+  --primary-contrast: #ffffff;
+  --warn-contrast: #ffffff;
+
   --radius: 10px;
   --radius-sm: 6px;
   --font-display: "Playfair Display", Georgia, serif;
@@ -49,6 +52,9 @@
   --accent-warn: #c2564a;
   --accent-good: #86a889;
   --accent-data-soft: rgba(201, 169, 110, 0.14);
+
+  --primary-contrast: #0a0a0a;
+  --warn-contrast: #ffffff;
 }
 
 * { box-sizing: border-box; }

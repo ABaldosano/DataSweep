@@ -51,7 +51,7 @@ export default function UploadPanel({ tables, onUploaded }) {
       onUploaded(data.tables);
     } catch (err) {
       setStatus("error");
-      setError("Couldn't reach the backend. Is it running?");
+      setError("We couldn't connect. Please check your connection and try again.");
     }
   }
 
